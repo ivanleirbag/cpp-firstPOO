@@ -11,7 +11,7 @@ class TObject{
 
     public:
         TObject();
-        ~TObject();
+       // ~TObject();
         void SetPosx(int aPosx){posx = aPosx;};
         int GetPosx(){return posx;};
 
@@ -23,7 +23,6 @@ class TObject{
 
         void SetHeight(int aHeight){height = aHeight;};
         int GetHeight(){return height;};
-
 };
 
 TObject::TObject(){
@@ -31,4 +30,4 @@ TObject::TObject(){
     posy = 0;
     height = 1;
     width = 10;
-}
+};
