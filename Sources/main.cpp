@@ -5,12 +5,13 @@
 
 class TObject{
 
-    private:
+    protected:
         int posx;
         int posy;
         int height;
         int width;
-        int color;
+        int txColor;
+        int bgColor;
 
     public:
         TObject();
@@ -26,32 +27,42 @@ class TObject{
 
         void SetHeight(int aHeight){height = aHeight;};
         int GetHeight(){return height;};
+
+        void SetColors(int aTxColor, int aBgColor);
 };
 
 TObject::TObject(){
+    
     posx = 0;
     posy = 0;
-    height = 1;
+    height = 3;
     width = 10;
+    start_color();
+    txColor = COLOR_WHITE;
+    bgColor = COLOR_BLACK;
+    init_pair(1, txColor, bgColor);
+}
+
+void TObject::SetColors(int aTxColor, int aBgColor){
+    txColor = aTxColor; 
+    bgColor = aBgColor;
+    init_pair(1, txColor, bgColor);
 }
 
 class LabelObj : public TObject{
-    
-    private:
+    protected:
         char text[256] = {0};
         enum TEXT_ALIGN {LEFT = 0, CENTER, RIGHT};
         int align;
-        char *str;
-
-
+        char *tP = text; 
     public:
         LabelObj();
 
         void setTxt(char* str);
-        char* getTxt(){return text;};
+        char* getTxt(){return tP;}
 
-        void SetAlign(int aAlign) { align = aAlign; }
-        int GetAlign() { return align; }
+        void SetAlign(int aAlign){align = aAlign;}
+        int GetAlign(){return align;}
         
         void ShowText();
 
@@ -69,22 +80,42 @@ void LabelObj::setTxt(char* str) {
 void LabelObj::ShowText(){
     int y = GetPosy();  
     int x = GetPosx();  
-    
-    move(y, x);
-    
-    printw("%s", text);
+    int width = GetWidth();
+    int height = GetHeight();
+    int lines = 0;
+    char* tP = getTxt();
+    attron(COLOR_PAIR(1));
 
+    for (int i = 0; i < 256; i++){
+        move(y, x);
+
+        x++;
+        if (*(tP+i) == '\0'){
+            break;
+        }
+        if ((i+1)%width == 0){
+            y++;
+            lines++;
+            x = GetPosx();
+        }
+        if ((lines == height)){
+            break;
+        }
+        printw("%c", *(tP+i));
+    }
+
+    attroff(COLOR_PAIR(1));
     refresh();
 }
 
-
-
 int main(){
     initscr();
+
     LabelObj lbl;
 
     lbl.SetPosx(16);
     lbl.SetPosy(1);
+    lbl.SetColors(COLOR_BLACK, COLOR_CYAN);
 
     lbl.setTxt("HOLA PROBANDO");
 
